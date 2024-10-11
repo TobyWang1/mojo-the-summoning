@@ -65,28 +65,35 @@ async function seed () {
 
   // Seed Attacks
   const attacks = await Attack.bulkCreate([
-    { title: "Charge", mojoCost: 10, staminaCost: 15 },
-    { title: "Thunderbolt", mojoCost: 20, staminaCost: 10 },
-    { title: "Piledriver", mojoCost: 25, staminaCost: 20 },
-    { title: "Fireball", mojoCost: 30, staminaCost: 25 },
-    { title: "Ice Spear", mojoCost: 15, staminaCost: 20 },
-    { title: "Heal", mojoCost: 10, staminaCost: 5 },
-    { title: "Poison Strike", mojoCost: 35, staminaCost: 30 },
-    { title: "Shadow Cloak", mojoCost: 40, staminaCost: 10 },
-    { title: "Earthquake", mojoCost: 50, staminaCost: 35 },
-    { title: "Wind Slash", mojoCost: 25, staminaCost: 15 },
+    { title: 'Charge', mojoCost: 10, staminaCost: 15 },
+    { title: 'Thunderbolt', mojoCost: 20, staminaCost: 10 },
+    { title: 'Piledriver', mojoCost: 25, staminaCost: 20 },
+    { title: 'Fireball', mojoCost: 30, staminaCost: 25 },
+    { title: 'Ice Spear', mojoCost: 15, staminaCost: 20 },
+    { title: 'Heal', mojoCost: 10, staminaCost: 5 },
+    { title: 'Poison Strike', mojoCost: 35, staminaCost: 30 },
+    { title: 'Shadow Cloak', mojoCost: 40, staminaCost: 10 },
+    { title: 'Earthquake', mojoCost: 50, staminaCost: 35 },
+    { title: 'Wind Slash', mojoCost: 25, staminaCost: 15 },
   ]);
 
   // Create associations between cards and attacks
-  const cardAttackPromises = [];
+  const cardAttackPromises = []
   for (const card of createdCards) {
-    const attackCount = randInt(2, 4); // Assign 2-4 random attacks to each card
+    const attackCount = randInt(2, 4) // Assign 2-4 random attacks to each card
+    const assignedAttacks = new Set() // Track assigned attacks to avoid duplicates
+
     for (let i = 0; i < attackCount; i++) {
-      const j = randInt(0, attacks.length);
-      cardAttackPromises.push(card.addAttack(attacks[j]));
+      let j;
+      do {
+        j = randInt(0, attacks.length)
+      } while (assignedAttacks.has(j)) // Check if attack is already assigned
+
+      assignedAttacks.add(j) // Mark attack as assigned
+      cardAttackPromises.push(card.addAttack(attacks[j]))
     }
   }
-  await Promise.all(cardAttackPromises);
+  await Promise.all(cardAttackPromises)
 
   console.log('Database seeded')
 }
